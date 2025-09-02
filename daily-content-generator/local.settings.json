@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "MONGODB_URI": "your_mongodb_uri_here",
+    "GOOGLE_AI_API_KEY": "your_google_ai_api_key_here"
+  }
+}

@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Main Backend",
+            "type": "shell",
+            "command": "python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Astrology Service",
+            "type": "shell",
+            "command": "cd astrology-service && python -m uvicorn main:app --reload --host 0.0.0.0 --port 8001",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Dependencies (Main Backend)",
+            "type": "shell",
+            "command": "cd app && pip install -r requirements.txt",
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Dependencies (Astrology Service)",
+            "type": "shell",
+            "command": "cd astrology-service && pip install -r requirements.txt",
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Dependencies (Daily Content Generator)",
+            "type": "shell",
+            "command": "cd daily-content-generator && pip install -r requirements.txt",
+            "problemMatcher": []
+        }
+    ]
+}

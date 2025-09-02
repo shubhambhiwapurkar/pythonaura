@@ -1,0 +1,17 @@
+fastapi>=0.68.0
+uvicorn>=0.15.0
+skyfield>=1.45
+pydantic>=1.9.0
+PyJHora
+pyswisseph
+python-dateutil
+
+geocoder
+
+pytz
+
+timezonefinder
+
+requests
+
+geopy
