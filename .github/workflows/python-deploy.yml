@@ -42,20 +42,18 @@ jobs:
       - name: Log Docker Build and Push
         run: echo "Docker image built and pushed to ACR successfully."
 
-      - name: 'Restart App Service'
-        run: az webapp restart --name cosmotalks-backend-app-unique --resource-group cosmotalks-rg
+      - name: 'Stop App Service for cleanup'
+        run: az webapp stop --name cosmotalks-backend-app-unique --resource-group cosmotalks-rg
 
       - name: 'Set WEBSITES_PORT'
         run: az webapp config appsettings set --resource-group cosmotalks-rg --name cosmotalks-backend-app-unique --settings WEBSITES_PORT=8000
 
-      - name: 'Set App Service to use Docker image'
+      - name: 'Set App Service to use new Docker image'
         run: |
           az webapp config set --resource-group cosmotalks-rg --name cosmotalks-backend-app-unique --linux-fx-version "DOCKER|cosmotalksacr.azurecr.io/astro-backend:${{ github.sha }}"
 
-      - name: 'Deploy to Azure App Service'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'cosmotalks-backend-app-unique'
-          images: 'cosmotalksacr.azurecr.io/astro-backend:${{ github.sha }}'
+      - name: 'Start App Service'
+        run: az webapp start --name cosmotalks-backend-app-unique --resource-group cosmotalks-rg
+
       - name: Log Deployment to Azure App Service
         run: echo "Deployment to Azure App Service completed successfully."
