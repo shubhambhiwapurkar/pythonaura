@@ -3,8 +3,8 @@ from mongoengine import Document, StringField, DateTimeField, DictField, Boolean
 
 class User(Document):
     email = StringField(required=True, unique=True)
-    password_hash = StringField()
-    name = StringField(required=True)
+    password_hash = StringField(required=False)
+    name = StringField()
     authProvider = StringField()
     googleId = StringField()
     avatarUrl = StringField()

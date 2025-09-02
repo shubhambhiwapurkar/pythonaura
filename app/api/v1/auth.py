@@ -1,5 +1,7 @@
 from datetime import timedelta
-from fastapi import APIRouter, HTTPException, Depends, status
+import httpx
+from fastapi import APIRouter, HTTPException, Depends, status, Request
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from app.models.user import User
 from app.core.security import (
@@ -135,3 +137,73 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
         "last_name": current_user.last_name,
         "birth_details": current_user.birth_details
     }
+
+@router.get("/google")
+async def google_login():
+    """Redirect to Google for authentication."""
+    return {
+        "url": f"https://accounts.google.com/o/oauth2/v2/auth?"
+               f"client_id={settings.GOOGLE_CLIENT_ID}&"
+               f"redirect_uri={settings.GOOGLE_REDIRECT_URI}&"
+               f"response_type=code&"
+               f"scope=openid%20email%20profile"
+    }
+
+@router.get("/google/callback")
+async def google_callback(request: Request):
+    """Handle Google callback."""
+    code = request.query_params.get("code")
+    if not code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing authorization code"
+        )
+
+    async with httpx.AsyncClient() as client:
+        token_response = await client.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "code": code,
+                "client_id": settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+                "grant_type": "authorization_code",
+            },
+        )
+        token_data = token_response.json()
+        id_token = token_data.get("id_token")
+
+        if not id_token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Missing id_token"
+            )
+
+        user_info_response = await client.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={"Authorization": f"Bearer {token_data['access_token']}"},
+        )
+        user_info = user_info_response.json()
+        email = user_info.get("email")
+        google_id = user_info.get("sub")
+        name = user_info.get("name")
+
+        user = User.objects(email=email).first()
+        if not user:
+            user = User(
+                email=email,
+                googleId=google_id,
+                name=name,
+                authProvider="google",
+            )
+            user.save()
+
+        access_token = create_access_token(str(user.id))
+        refresh_token = create_refresh_token(str(user.id))
+        user.refresh_token = refresh_token
+        user.save()
+
+        # Redirect to the frontend with the tokens
+        return RedirectResponse(
+            url=f"{settings.FRONTEND_CORS_ORIGINS[0]}/profile?access_token={access_token}&refresh_token={refresh_token}"
+        )

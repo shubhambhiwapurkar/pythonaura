@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     GOOGLE_MAPS_API_KEY: str = Field(..., alias="GOOGLE_CLIENT_SECRET")
     GOOGLE_AI_API_KEY: str = Field(..., alias="GEMINI_API_KEY")
 
+    # Google OAuth settings
+    GOOGLE_CLIENT_ID: str = Field(..., alias="GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET: str = Field(..., alias="GOOGLE_CLIENT_SECRET")
+    GOOGLE_REDIRECT_URI: str = Field(..., alias="GOOGLE_REDIRECT_URI")
+
     # Service URLs
     ASTROLOGY_SERVICE_URL: str
 
