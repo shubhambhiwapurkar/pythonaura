@@ -25,6 +25,7 @@ jobs:
           tenant-id: c24bfd69-d415-4070-9b5d-763af27aa9e0
           subscription-id: 521a887f-4f1d-4e0b-a5fb-9ae11e75525c
 
+          
       - name: 'Set up Python'
         uses: actions/setup-python@v4
         with:
