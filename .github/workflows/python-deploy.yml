@@ -42,6 +42,12 @@ jobs:
       - name: Log Docker Build and Push
         run: echo "Docker image built and pushed to ACR successfully."
 
+      - name: 'Restart App Service'
+        run: az webapp restart --name cosmotalks-backend-app-unique --resource-group cosmotalks-rg
+
+      - name: 'Set WEBSITES_PORT'
+        run: az webapp config appsettings set --resource-group cosmotalks-rg --name cosmotalks-backend-app-unique --settings WEBSITES_PORT=8000
+
       - name: 'Set App Service to use Docker image'
         run: |
           az webapp config set --resource-group cosmotalks-rg --name cosmotalks-backend-app-unique --linux-fx-version "DOCKER|cosmotalksacr.azurecr.io/astro-backend:${{ github.sha }}"
