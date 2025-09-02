@@ -1,19 +1,32 @@
-# Deployment Plan: astrology-service Docker Image
+# Cosmotalks Azure Deployment Plan
 
-This plan outlines the steps to build and push the `astrology-service` Docker image to the Azure Container Registry.
+## 1. Infrastructure Setup
 
-## 1. Verify Local Docker Image
+*   **Resource Group:** Create a new resource group to organize all the resources required for the application.
+*   **Container Registry:** Set up an Azure Container Registry (ACR) to store the Docker images for the `app` and `astrology-service`.
+*   **Database:** Provision a Cosmos DB for MongoDB API instance to serve as the application's database.
+*   **Container Apps Environment:** Create an Azure Container Apps environment to host the containerized services.
+*   **Container Apps:**
+    *   Create a Container App for the `app` service.
+    *   Create a Container App for the `astrology-service`.
+*   **Function App:** Create a Function App to host the `daily-content-generator`.
 
-- [ ] Check if the `cosmotalksacr.azurecr.io/astrology-service:latest` Docker image exists locally using the `docker images` command.
+## 2. CI/CD Pipeline
 
-## 2. Log in to Azure Container Registry
+*   **GitHub Actions:**
+    *   **Update existing workflow:** Modify the existing `python-deploy.yml` workflow.
+    *   Build and push Docker images for `app` and `astrology-service` to ACR.
+    *   Deploy `app` and `astrology-service` to Azure Container Apps.
+    *   Create a new workflow to deploy the `daily-content-generator` to the Azure Function App.
 
-- [ ] Ensure authentication with Azure Container Registry by running `az acr login --name cosmotalksacr`.
+## 3. Application Configuration
 
-## 3. Push Docker Image
+*   **Secrets Management:** Use Azure Key Vault to store and manage sensitive information like database connection strings and API keys.
+*   **Environment Variables:** Configure the necessary environment variables for each service in the Container Apps and Function App.
 
-- [ ] Push the Docker image to the registry with `docker push cosmotalksacr.azurecr.io/astrology-service:latest`.
+## 4. Deployment Steps
 
-## 4. Verify Image in Registry
-
-- [ ] List the repositories in the ACR to confirm the image was pushed successfully, using `az acr repository list --name cosmotalksacr -o table`.
+1.  **Provision Infrastructure:** Use the Azure CLI or ARM templates to create all the necessary Azure resources.
+2.  **Configure CI/CD:** Set up the GitHub Actions workflows to automate the build and deployment process.
+3.  **Deploy Application:** Trigger the CI/CD pipeline to deploy the application to Azure.
+4.  **Verify Deployment:** Test the application to ensure that all services are running correctly and can communicate with each other.
