@@ -41,6 +41,7 @@ jobs:
           az containerapp update \
             --name cosmicapp-app \
             --resource-group cosmicapp-rg \
+            --container-name cosmicapp-app \
             --image cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
 
       - name: 'Deploy astrology service Container App'
@@ -48,4 +49,5 @@ jobs:
           az containerapp update \
             --name cosmicapp-astrology \
             --resource-group cosmicapp-rg \
+            --container-name cosmicapp-astrology \
             --image cosmicappacr.azurecr.io/astro-astrology-service:${{ github.sha }}
