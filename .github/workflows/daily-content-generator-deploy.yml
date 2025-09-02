@@ -34,4 +34,4 @@ jobs:
       - name: 'Deploy to Azure Function App'
         run: |
           cd daily-content-generator
-          func azure functionapp publish cosmotalks-daily-content --force
+          func azure functionapp publish cosmicapp-daily-content --force

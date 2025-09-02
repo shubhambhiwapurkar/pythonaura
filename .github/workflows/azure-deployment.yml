@@ -20,50 +20,29 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Create Resource Group'
-        run: az group create --name cosmotalks-rg --location "East US"
-
-      - name: 'Create Azure Container Registry'
-        run: az acr create --resource-group cosmotalks-rg --name cosmotalksacr --sku Basic --admin-enabled true
-
       - name: 'Login to Azure Container Registry'
-        run: az acr login --name cosmotalksacr
+        run: az acr login --name cosmicappacr
 
       - name: 'Build and push app service Docker image'
         run: |
-          docker build . -f app/Dockerfile -t cosmotalksacr.azurecr.io/astro-app-service:${{ github.sha }}
-          docker push cosmotalksacr.azurecr.io/astro-app-service:${{ github.sha }}
+          docker build . -f app/Dockerfile -t cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
+          docker push cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
 
       - name: 'Build and push astrology service Docker image'
         run: |
-          docker build . -f astrology-service/Dockerfile -t cosmotalksacr.azurecr.io/astro-astrology-service:${{ github.sha }}
-          docker push cosmotalksacr.azurecr.io/astro-astrology-service:${{ github.sha }}
+          docker build . -f astrology-service/Dockerfile -t cosmicappacr.azurecr.io/astro-astrology-service:${{ github.sha }}
+          docker push cosmicappacr.azurecr.io/astro-astrology-service:${{ github.sha }}
 
-      - name: 'Create Container Apps Environment'
-        run: az containerapp env create --name cosmotalks-env --resource-group cosmotalks-rg --location "East US"
-
-      - name: 'Create and Deploy app service Container App'
+      - name: 'Deploy app service Container App'
         run: |
-          az containerapp create \
-            --name cosmotalks-app \
-            --resource-group cosmotalks-rg \
-            --environment cosmotalks-env \
-            --image cosmotalksacr.azurecr.io/astro-app-service:${{ github.sha }} \
-            --target-port 8000 \
-            --ingress external \
-            --registry-server cosmotalksacr.azurecr.io \
-            --registry-username $(az acr credential show -n cosmotalksacr --query "username" -o tsv) \
-            --registry-password $(az acr credential show -n cosmotalksacr --query "passwords.value" -o tsv)
+          az containerapp update \
+            --name cosmicapp-app \
+            --resource-group cosmicapp-rg \
+            --image cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
 
-      - name: 'Create and Deploy astrology service Container App'
+      - name: 'Deploy astrology service Container App'
         run: |
-          az containerapp create \
-            --name cosmotalks-astrology-service \
-            --resource-group cosmotalks-rg \
-            --environment cosmotalks-env \
-            --image cosmotalksacr.azurecr.io/astro-astrology-service:${{ github.sha }} \
-            --target-port 8000 \
-            --ingress external \
-            --registry-server cosmotalksacr.azurecr.io \
-            --registry-username $(az acr credential show -n cosmotalksacr --query "username" -o tsv) \
-            --registry-password $(az acr credential show -n cosmotalksacr --query "passwords.value" -o tsv)
+          az containerapp update \
+            --name cosmicapp-astrology \
+            --resource-group cosmicapp-rg \
+            --image cosmicappacr.azurecr.io/astro-astrology-service:${{ github.sha }}
