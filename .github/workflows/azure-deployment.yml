@@ -42,12 +42,36 @@ jobs:
             --name cosmicapp-app \
             --resource-group cosmicapp-rg \
             --container-name cosmicapp-app \
-            --image cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
+            --image cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }} \
+            --target-port 8000
 
-      - name: 'Deploy astrology service Container App'
+  deploy-function-app:
+    needs: build-and-deploy
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: 'Login to Azure CLI'
+        uses: azure/login@v2
+        with:
+          client-id: e9fa3de9-bc08-4d19-8c0f-a8f07b94b116
+          tenant-id: c24bfd69-d415-4070-9b5d-763af27aa9e0
+          subscription-id: 521a887f-4f1d-4e0b-a5fb-9ae11e75525c
+          
+      - name: 'Set up Python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 'Install Azure Functions Core Tools'
         run: |
-          az containerapp update \
-            --name cosmicapp-astrology \
-            --resource-group cosmicapp-rg \
-            --container-name cosmicapp-astrology \
-            --image cosmicappacr.azurecr.io/astro-astrology-service:${{ github.sha }}
+          npm install -g azure-functions-core-tools@4 --unsafe-perm true
+          
+      - name: 'Deploy to Azure Function App'
+        run: |
+          cd daily-content-generator
+          func azure functionapp publish cosmicapp-daily-content --force

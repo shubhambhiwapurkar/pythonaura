@@ -1,32 +1,57 @@
-# Cosmotalks Azure Deployment Plan
+# Deployment Plan
 
-## 1. Infrastructure Setup
+This document outlines the steps required to deploy the integrated astrology application.
 
-*   **Resource Group:** Create a new resource group to organize all the resources required for the application.
-*   **Container Registry:** Set up an Azure Container Registry (ACR) to store the Docker images for the `app` and `astrology-service`.
-*   **Database:** Provision a Cosmos DB for MongoDB API instance to serve as the application's database.
-*   **Container Apps Environment:** Create an Azure Container Apps environment to host the containerized services.
-*   **Container Apps:**
-    *   Create a Container App for the `app` service.
-    *   Create a Container App for the `astrology-service`.
-*   **Function App:** Create a Function App to host the `daily-content-generator`.
+## Frontend
 
-## 2. CI/CD Pipeline
+The frontend is a Next.js application. It can be deployed to any platform that supports Node.js, such as Vercel, Netlify, or a custom server.
 
-*   **GitHub Actions:**
-    *   **Update existing workflow:** Modify the existing `python-deploy.yml` workflow.
-    *   Build and push Docker images for `app` and `astrology-service` to ACR.
-    *   Deploy `app` and `astrology-service` to Azure Container Apps.
-    *   Create a new workflow to deploy the `daily-content-generator` to the Azure Function App.
+### Build
 
-## 3. Application Configuration
+To build the frontend, run the following commands:
 
-*   **Secrets Management:** Use Azure Key Vault to store and manage sensitive information like database connection strings and API keys.
-*   **Environment Variables:** Configure the necessary environment variables for each service in the Container Apps and Function App.
+```bash
+cd frontend
+npm install
+npm run build
+```
 
-## 4. Deployment Steps
+### Environment Variables
 
-1.  **Provision Infrastructure:** Use the Azure CLI or ARM templates to create all the necessary Azure resources.
-2.  **Configure CI/CD:** Set up the GitHub Actions workflows to automate the build and deployment process.
-3.  **Deploy Application:** Trigger the CI/CD pipeline to deploy the application to Azure.
-4.  **Verify Deployment:** Test the application to ensure that all services are running correctly and can communicate with each other.
+The frontend requires the following environment variable to be set:
+
+*   `NEXT_PUBLIC_API_BASE_URL`: The URL of the backend API.
+
+### Running
+
+To run the frontend in production, use the following command:
+
+```bash
+npm start
+```
+
+## Backend
+
+The backend is a FastAPI application. It can be deployed to any platform that supports Python, such as Heroku, AWS, or a custom server.
+
+### Build
+
+The backend is a Python application and does not require a build step.
+
+### Environment Variables
+
+The backend requires the following environment variables to be set:
+
+*   `MONGO_URI`: The connection string for the MongoDB database.
+*   `JWT_SECRET`: A secret key for signing JWTs.
+*   `GOOGLE_CLIENT_SECRET`: The client secret for the Google Maps API.
+*   `GEMINI_API_KEY`: The API key for the Google AI API.
+*   `ASTROLOGY_SERVICE_URL`: The URL of the astrology service.
+*   `CORS_ORIGIN`: The URL of the frontend application.
+
+### Running
+
+To run the backend in production, use a production-ready ASGI server, such as Uvicorn:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000
