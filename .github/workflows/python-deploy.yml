@@ -43,7 +43,7 @@ jobs:
         run: echo "Docker image built and pushed to ACR successfully."
 
       - name: 'Delete existing App Service to ensure clean state'
-        run: az webapp delete --name cosmotalks-backend-app-unique --resource-group cosmotalks-rg --keep-empty-plan -y
+        run: az webapp delete --name cosmotalks-backend-app-unique --resource-group cosmotalks-rg --keep-empty-plan
 
       - name: 'Create new App Service configured for Docker'
         run: |
