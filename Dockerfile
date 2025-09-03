@@ -24,7 +24,7 @@ COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
 # Copy the application code
-COPY ./app /app
+COPY ./app/ /app/
 
 # Expose the port the app runs on
 EXPOSE 8000
