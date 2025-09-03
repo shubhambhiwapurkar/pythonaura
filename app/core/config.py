@@ -5,6 +5,12 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 from azure.appconfiguration.provider import load, SettingSelector
 from pydantic import Field
+from dotenv import load_dotenv
+import os
+
+# Construct the path to the .env file within the 'app' directory
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path=dotenv_path)
 
 class Settings(BaseSettings):
     # MongoDB settings

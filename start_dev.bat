@@ -1,6 +1,13 @@
 @echo off
 echo Starting development environment...
 
+:: Stop any running containers and remove them
+echo Stopping existing Docker containers...
+docker-compose down
+
+:: Wait for the container to be removed
+timeout /t 5
+
 :: Start MongoDB using Docker Compose
 echo Starting MongoDB...
 docker-compose up -d
@@ -10,7 +17,7 @@ timeout /t 5
 
 :: Start the main backend
 echo Starting main backend...
-start cmd /k "venv\Scripts\activate.bat && cd app && uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+start cmd /k "venv\Scripts\activate.bat && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
 
 :: Start the astrology service
 echo Starting astrology service...
