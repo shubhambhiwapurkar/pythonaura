@@ -15,6 +15,7 @@ FROM python:3.9-slim-buster
 
 # Set working directory
 WORKDIR /app
+ENV PYTHONPATH=/app
 
 # Copy the installed dependencies from the builder stage
 COPY --from=builder /app/wheels /wheels
