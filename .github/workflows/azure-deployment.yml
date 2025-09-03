@@ -28,7 +28,7 @@ jobs:
 
       - name: 'Build and push app service Docker image'
         run: |
-          docker build . -f app/Dockerfile -t cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
+          docker build . -f Dockerfile -t cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
           docker push cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
 
       - name: 'Build and push astrology service Docker image'
@@ -42,7 +42,15 @@ jobs:
             --name cosmicapp-app \
             --resource-group cosmicapp-rg \
             --container-name cosmicapp-app \
-            --image cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }} \
+            --image cosmicappacr.azurecr.io/astro-app-service:${{ github.sha }}
+
+      - name: 'Deploy astrology service Container App'
+        run: |
+          az containerapp update \
+            --name cosmicapp-astrology \
+            --resource-group cosmicapp-rg \
+            --container-name cosmicapp-astrology \
+            --image cosmicappacr.azurecr.io/astro-astrology-service:${{ github.sha }}
 
   deploy-function-app:
     needs: build-and-deploy
