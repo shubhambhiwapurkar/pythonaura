@@ -15,7 +15,7 @@ class ChatService:
     async def create_session(user: User, title: str = None, context: dict = None) -> ChatSession:
         """Create a new chat session."""
         session = ChatSession(
-            user_id=user.id,
+            user=user,
             title=title or "New Chat",
             context=context or {}
         ).save()

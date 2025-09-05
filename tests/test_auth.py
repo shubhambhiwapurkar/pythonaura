@@ -15,16 +15,16 @@ def client():
 @pytest.fixture(scope="module", autouse=True)
 def setup_teardown_db():
     # Setup: clean up the user before the test
-    User.objects(email="testuser@example.com").delete()
+    User.objects(email="testuser2@example.com").delete()
     yield
     # Teardown: clean up the user after the test
-    User.objects(email="testuser@example.com").delete()
+    User.objects(email="testuser2@example.com").delete()
 
 def test_signup(client):
     response = client.post(
         "/api/v1/auth/signup",
         json={
-            "email": "testuser@example.com",
+            "email": "testuser2@example.com",
             "password": "testpassword",
             "first_name": "Test",
             "last_name": "User",

@@ -7,7 +7,7 @@ def signup(email, password):
     signup_data = {
         "email": email,
         "password": password,
-        "first_name": "Test",
+        "first_name": "Test2",
         "last_name": "User",
         "birth_details": {
             "date": "2000-01-01",
@@ -28,17 +28,10 @@ def login(email, password):
     response.raise_for_status()
     return response.json()
 
-def get_me(token):
-    response = requests.get(
-        f"{BASE_URL}/api/v1/me",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    response.raise_for_status()
-    return response.json()
-
 def create_chat_session(token):
     response = requests.post(
-        f"{BASE_URL}/api/v1/sessions",
+        f"{BASE_URL}/api/v1/chat/sessions",
+        json={}, # Add an empty JSON body
         headers={"Authorization": f"Bearer {token}"}
     )
     response.raise_for_status()
@@ -46,7 +39,7 @@ def create_chat_session(token):
 
 def send_message(token, session_id, message_content):
     response = requests.post(
-        f"{BASE_URL}/api/v1/sessions/{session_id}/messages",
+        f"{BASE_URL}/api/v1/chat/sessions/{session_id}/messages",
         json={"content": message_content},
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -55,7 +48,7 @@ def send_message(token, session_id, message_content):
 
 def get_messages(token, session_id):
     response = requests.get(
-        f"{BASE_URL}/api/v1/sessions/{session_id}/messages",
+        f"{BASE_URL}/api/v1/chat/sessions/{session_id}/messages",
         headers={"Authorization": f"Bearer {token}"}
     )
     response.raise_for_status()
@@ -63,7 +56,7 @@ def get_messages(token, session_id):
 
 def delete_chat_session(token, session_id):
     response = requests.delete(
-        f"{BASE_URL}/api/v1/sessions/{session_id}",
+        f"{BASE_URL}/api/v1/chat/sessions/{session_id}",
         headers={"Authorization": f"Bearer {token}"}
     )
     response.raise_for_status()
@@ -78,7 +71,7 @@ def delete_account(token):
     return response.json()
 
 def run_tests():
-    test_email = "test_user@example.com"
+    test_email = "test_user3@example.com"
     test_password = "testpassword"
 
     try:
@@ -88,11 +81,7 @@ def run_tests():
         refresh_token = signup_response["refresh_token"]
         print(f"Signup Response: {signup_response}")
 
-        # 2. Get /me
-        me_response = get_me(access_token)
-        print(f"Get /me Response: {me_response}")
-
-        # 3. Create chat session
+        # 2. Create chat session
         session_response = create_chat_session(access_token)
         session_id = session_response["id"]
         print(f"Create chat session Response: {session_response}")

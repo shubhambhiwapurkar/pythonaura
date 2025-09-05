@@ -12,6 +12,7 @@ class ChatSession(Document):
     user = ReferenceField('User', required=True)
     title = fields.StringField(default="New Chat")
     messages = fields.EmbeddedDocumentListField(Message, default=list)
+    context = fields.DictField(default=dict) # Add context field
     created_at = fields.DateTimeField(default=datetime.utcnow)
     updated_at = fields.DateTimeField(default=datetime.utcnow)
     
