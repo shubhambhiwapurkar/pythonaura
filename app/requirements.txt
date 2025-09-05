@@ -16,4 +16,5 @@ timezonefinder>=6.2.0
 azure-appconfiguration-provider>=1.2.0
 uvicorn 
 gunicorn
+bcrypt
 
