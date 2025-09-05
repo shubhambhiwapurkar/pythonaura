@@ -10,7 +10,7 @@ pydantic-settings>=2.0.0
 email-validator>=2.0.0
 httpx>=0.23.0
 geopy>=2.2.0
-google-genai
+google-generativeai
 timezonefinder>=6.2.0
 azure-appconfiguration-provider>=1.2.0
 
