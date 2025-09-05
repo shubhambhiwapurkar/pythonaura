@@ -15,6 +15,7 @@ class ChatSession(Document):
     context = fields.DictField(default=dict) # Add context field
     created_at = fields.DateTimeField(default=datetime.utcnow)
     updated_at = fields.DateTimeField(default=datetime.utcnow)
+    is_active = fields.BooleanField(default=True) # Add is_active field
     
     meta = {
         'collection': 'chat_sessions',

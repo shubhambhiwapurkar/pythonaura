@@ -71,7 +71,7 @@ def delete_account(token):
     return response.json()
 
 def run_tests():
-    test_email = "test_user3@example.com"
+    test_email = "test_user4@example.com"
     test_password = "testpassword"
 
     try:
