@@ -14,28 +14,28 @@ load_dotenv(dotenv_path=dotenv_path)
 
 class Settings(BaseSettings):
     # MongoDB settings
-    MONGODB_URI: str = Field(..., alias="MONGO_URI")
+    MONGODB_URI: str = Field(..., alias="mongo-uri")
 
     # JWT settings
-    JWT_SECRET_KEY: str = Field(..., alias="JWT_SECRET")
+    JWT_SECRET_KEY: str = Field(..., alias="jwt-secret")
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # External API keys
-    GOOGLE_MAPS_API_KEY: str = Field(..., alias="GOOGLE_CLIENT_SECRET")
-    GOOGLE_AI_API_KEY: str = Field(..., alias="GEMINI_API_KEY")
+    GOOGLE_MAPS_API_KEY: str = Field(..., alias="google-maps-api-key")
+    GOOGLE_AI_API_KEY: str = Field(..., alias="gemini-api-key")
 
     # Google OAuth settings
-    GOOGLE_CLIENT_ID: str = Field(..., alias="GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET: str = Field(..., alias="GOOGLE_CLIENT_SECRET")
-    GOOGLE_REDIRECT_URI: str = Field(..., alias="GOOGLE_REDIRECT_URI")
+    GOOGLE_CLIENT_ID: str = Field(..., alias="google-client-id")
+    GOOGLE_CLIENT_SECRET: str = Field(..., alias="google-client-secret")
+    GOOGLE_REDIRECT_URI: str = Field(..., alias="google-redirect-uri")
 
     # Service URLs
-    ASTROLOGY_SERVICE_URL: str
+    ASTROLOGY_SERVICE_URL: str = Field(..., alias="astrology-service-url")
 
     # CORS settings
-    FRONTEND_CORS_ORIGINS: List[AnyHttpUrl] = Field(..., alias="CORS_ORIGIN")
+    FRONTEND_CORS_ORIGINS: List[AnyHttpUrl] = Field(..., alias="cors-origin")
 
     model_config = {
         "case_sensitive": True,
@@ -53,3 +53,5 @@ def get_settings() -> Settings:
         )
         return Settings(**config)
     return Settings()
+
+settings = get_settings()
