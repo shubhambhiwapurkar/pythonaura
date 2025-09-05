@@ -13,6 +13,6 @@ geopy>=2.2.0
 google-generativeai
 timezonefinder>=6.2.0
 azure-appconfiguration-provider>=1.2.0
-
+uvicorn 
 gunicorn
 
