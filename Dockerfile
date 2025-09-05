@@ -2,7 +2,7 @@
 FROM python:3.9-slim-buster AS builder
 
 # Set working directory
-WORKDIR /app
+WORKDIR /code
 
 # Copy requirements.txt
 COPY requirements.txt .
@@ -15,7 +15,7 @@ FROM python:3.9-slim-buster
 
 # Set working directory
 WORKDIR /app
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/code
 
 # Copy the installed dependencies from the builder stage
 COPY --from=builder /app/wheels /wheels
@@ -25,7 +25,7 @@ COPY --from=builder /app/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
 # Copy the application code
-COPY ./app/ /app/
+COPY ./app /code/app
 
 # Expose the port the app runs on
 EXPOSE 8000
