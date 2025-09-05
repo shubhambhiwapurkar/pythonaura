@@ -5,7 +5,7 @@ FROM python:3.9-slim-buster AS builder
 WORKDIR /code
 
 # Copy requirements.txt
-COPY requirements.txt .
+COPY app/requirements.txt .
 
 # Install dependencies
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
