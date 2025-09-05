@@ -7,8 +7,8 @@ WORKDIR /code
 # Copy requirements.txt
 COPY app/requirements.txt ./requirements.txt
 
-# Install dependencies
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+# Install dependencies - Fixed the wheel directory path
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /code/wheels -r requirements.txt
 
 # Stage 2: Production image
 FROM python:3.9-slim-buster
@@ -25,10 +25,10 @@ COPY --from=builder /code/requirements.txt ./requirements.txt
 RUN pip install --no-cache /wheels/*
 
 # Copy the application code
-COPY /app ./app
+COPY ./app ./app
 
 # Expose the port the app runs on
 EXPOSE 8000
 
 # Start the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
