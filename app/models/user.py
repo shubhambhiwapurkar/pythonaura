@@ -4,7 +4,10 @@ from mongoengine import Document, StringField, DateTimeField, DictField, Boolean
 class User(Document):
     email = StringField(required=True, unique=True)
     password_hash = StringField(required=False)
-    name = StringField()
+    first_name = StringField()
+    last_name = StringField()
+    birth_details = DictField()
+    name = StringField() # Keep existing 'name' field for compatibility if needed, or remove if first/last name are sufficient.
     authProvider = StringField()
     googleId = StringField()
     avatarUrl = StringField()

@@ -55,7 +55,8 @@ async def signup(user_data: UserCreate):
         password_hash=get_password_hash(user_data.password),
         first_name=user_data.first_name,
         last_name=user_data.last_name,
-        birth_details=user_data.birth_details
+        birth_details=user_data.birth_details,
+        name=f"{user_data.first_name} {user_data.last_name}" # Combine for existing 'name' field
     )
     user.save()
 
