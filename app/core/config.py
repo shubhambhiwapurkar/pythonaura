@@ -43,12 +43,13 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def get_settings() -> Settings:
-    if os.getenv("AZURE_APP_CONFIG_CONNECTION_STRING"):
+    # Updated to use the hyphenated environment variable name
+    azure_connection_string = os.environ.get("azure-app-config-connection-string")
+    
+    if azure_connection_string:
         config = load(
-            connection_string=os.getenv("AZURE_APP_CONFIG_CONNECTION_STRING"),
+            connection_string=azure_connection_string,
             selectors=[SettingSelector(key_filter="*", label_filter="\0")]
         )
         return Settings(**config)
     return Settings()
-
-settings = get_settings()
