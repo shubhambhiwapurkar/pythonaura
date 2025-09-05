@@ -19,7 +19,7 @@ ENV PYTHONPATH=/code
 
 # Copy the installed dependencies from the builder stage
 COPY --from=builder /app/wheels /wheels
-COPY --from=builder /app/requirements.txt .
+COPY --from=builder /app/requirements.txt /code/requirements.txt
 
 # Install the dependencies from the wheels
 RUN pip install --no-cache /wheels/*
@@ -31,4 +31,4 @@ COPY ./app /code/app
 EXPOSE 8000
 
 # Start the application
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
