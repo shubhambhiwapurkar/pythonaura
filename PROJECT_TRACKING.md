@@ -60,3 +60,28 @@ The following roadmap outlines the necessary steps to bring the application to a
 ## 4. Testing Strategy
 
 All testing will be conducted in the production environment. No new tests should be written.
+
+## 2025-09-05: Backend Dockerfile CMD Correction for Azure Deployment
+
+**Issue:**  
+Azure backend container was not starting, even though configuration/environment variables were correct. Local startup worked, but Azure failed to boot.
+
+**Root Cause:**  
+The Dockerfile copied all files from `./app/` into `/app` in the container, resulting in `main.py` being directly under `/app/`.  
+The previous CMD (`uvicorn app.main:app ...`) looked for an `app/main.py` (i.e., `/app/app/main.py`) which does not exist in this structure.
+
+**Fix:**  
+CMD changed from:
+```
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+```
+to:
+```
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+```
+This matches the actual file layout inside the container and ensures startup will work locally and in Azure.
+
+**Implications:**
+- The CMD must always match the module path as it exists in the built image.
+- For other deployments, if the COPY path or project structure changes, update CMD accordingly.
+- No changes required in frontend or Azure Function.
