@@ -1,6 +1,6 @@
 import os
 from typing import List
-from pydantic import AnyHttpUrl
+from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 from azure.appconfiguration.provider import load, SettingSelector
@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
     model_config = {
         "case_sensitive": True,
+        "extra": "ignore",  # This will ignore extra fields instead of throwing an error
     }
 
 @lru_cache()
