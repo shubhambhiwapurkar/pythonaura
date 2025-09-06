@@ -23,7 +23,7 @@ app = FastAPI(
 app.add_middleware(ErrorHandlingMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.FRONTEND_CORS_ORIGINS,
+    allow_origins=settings.FRONTEND_CORS_ORIGINS + ["https://cosmic-insights-ai-tmdlw.web.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
