@@ -16,7 +16,7 @@ class MessageResponse(BaseModel):
     id: str
     content: str
     message_type: str
-    created_at: datetime
+    created_at: datetime # Changed from created_at to timestamp
 
     class Config:
         from_attributes = True
@@ -113,7 +113,7 @@ async def send_message(
         "id": str(ai_message.id),
         "content": ai_message.content,
         "role": ai_message.role, # Changed message_type to role
-        "created_at": ai_message.created_at
+        "created_at": ai_message.timestamp # Changed created_at to timestamp
     }
 
 @router.get("/sessions/{session_id}/messages", response_model=List[MessageResponse])
@@ -133,7 +133,7 @@ async def get_messages(
         "id": str(message.id),
         "content": message.content,
         "role": message.role, # Changed message_type to role
-        "created_at": message.created_at
+        "created_at": message.timestamp # Changed created_at to timestamp
     } for message in session.messages]
 
 @router.post("/sessions/{session_id}/end")

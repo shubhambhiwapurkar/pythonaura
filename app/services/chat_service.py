@@ -5,46 +5,62 @@ from app.models.user import User
 import google.generativeai as genai
 from app.core.config import settings
 from bson import ObjectId
+from fastapi import HTTPException
 
 # Configure the AI model
 genai.configure(api_key=settings.GOOGLE_AI_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
 
 class ChatService:
+    VALID_MESSAGE_TYPES = {'user', 'assistant'}
+
     @staticmethod
     async def create_session(user: User, title: str = None, context: dict = None) -> ChatSession:
         """Create a new chat session."""
         session = ChatSession(
             user=user,
             title=title or "New Chat",
-            context=context or {}
+            context=context or {},
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
         ).save()
         return session
 
     @staticmethod
-    async def get_user_sessions(user: User, active_only: bool = True) -> List[ChatSession]:
+    async def get_user_sessions(user: User, active_only: bool = True, limit: int = 20) -> List[ChatSession]:
         """Get all chat sessions for a user."""
-        query = ChatSession.objects(user_id=user.id)
+        query = ChatSession.objects(user=user)
         if active_only:
             query = query.filter(is_active=True)
-        return list(query.order_by('-updated_at'))
+        return list(query.order_by('-updated_at').limit(limit))
 
     @staticmethod
     async def get_session(session_id: str, user: User) -> Optional[ChatSession]:
         """Get a specific chat session."""
         try:
-            return ChatSession.objects(id=ObjectId(session_id), user=user).first()
-        except Exception:
-            return None
+            session = ChatSession.objects(id=ObjectId(session_id), user=user).first()
+            if not session:
+                raise HTTPException(status_code=404, detail="Chat session not found")
+            return session
+        except Exception as e:
+            raise HTTPException(status_code=404, detail="Invalid session ID")
 
     @staticmethod
     async def add_message(session: ChatSession, content: str, message_type: str) -> Message:
         """Add a message to a chat session."""
+        if not content.strip():
+            raise HTTPException(status_code=400, detail="Message content cannot be empty")
+        
+        if message_type not in ChatService.VALID_MESSAGE_TYPES:
+            raise HTTPException(status_code=400, detail=f"Invalid message type. Must be one of: {ChatService.VALID_MESSAGE_TYPES}")
+
         message = Message(
             role=message_type,
-            content=content
+            content=content.strip(),
+            timestamp=datetime.utcnow()
         )
         session.messages.append(message)
+        session.updated_at = datetime.utcnow()
         session.save()
         return message
 
@@ -55,8 +71,8 @@ class ChatService:
         conversation_history = []
         for msg in session.messages[-5:]:  # Get last 5 messages for context
             conversation_history.append({
-                'role': msg.role, # Changed message_type to role
-                'content': msg.content
+                'role': msg.role,
+                'parts': [{'text': msg.content}]
             })
         
         # Add custom context if available

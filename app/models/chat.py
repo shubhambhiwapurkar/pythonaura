@@ -12,24 +12,28 @@ class ChatSession(Document):
     user = ReferenceField('User', required=True)
     title = fields.StringField(default="New Chat")
     messages = fields.EmbeddedDocumentListField(Message, default=list)
-    context = fields.DictField(default=dict) # Add context field
+    context = fields.DictField(default=dict)
     created_at = fields.DateTimeField(default=datetime.utcnow)
     updated_at = fields.DateTimeField(default=datetime.utcnow)
-    is_active = fields.BooleanField(default=True) # Add is_active field
+    is_active = fields.BooleanField(default=True)
     
     meta = {
         'collection': 'chat_sessions',
         'indexes': [
             'user',
             ('user', '-created_at'),
+            '-updated_at',  # Add index for sorting by updated_at
+            ('user', '-updated_at')  # Compound index for user's recent chats
         ]
     }
 
     def save(self, *args, **kwargs):
         if not self.title and self.messages:
-            # Generate title from first message if not set
-            first_msg = self.messages.content
-            self.title = first_msg[:50] + "..." if len(first_msg) > 50 else first_msg
+            # Generate title from first user message if not set
+            first_user_msg = next((msg for msg in self.messages if msg.role == 'user'), None)
+            if first_user_msg:
+                content = first_user_msg.content
+                self.title = content[:50] + "..." if len(content) > 50 else content
         
         self.updated_at = datetime.utcnow()
         return super(ChatSession, self).save(*args, **kwargs)
