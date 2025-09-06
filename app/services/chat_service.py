@@ -55,7 +55,7 @@ class ChatService:
         conversation_history = []
         for msg in session.messages[-5:]:  # Get last 5 messages for context
             conversation_history.append({
-                'role': msg.message_type,
+                'role': msg.role, # Changed message_type to role
                 'content': msg.content
             })
         
