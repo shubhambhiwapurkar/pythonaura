@@ -15,11 +15,24 @@ class MessageCreate(BaseModel):
 class MessageResponse(BaseModel):
     id: str
     content: str
+    role: str
     message_type: str
-    created_at: datetime # Changed from created_at to timestamp
+    created_at: datetime
+    metadata: dict = {}
 
     class Config:
         from_attributes = True
+        
+    @classmethod
+    def from_db_message(cls, message: Message):
+        return cls(
+            id=str(message.id),
+            content=message.content,
+            role=message.role,
+            message_type=message.message_type,
+            created_at=message.timestamp,
+            metadata=message.metadata
+        )
 
 class SessionCreate(BaseModel):
     title: Optional[str] = None
@@ -108,13 +121,8 @@ async def send_message(
         message_type='assistant'
     )
     
-    # Return the AI's response
-    return {
-        "id": str(ai_message.id),
-        "content": ai_message.content,
-        "role": ai_message.role, # Changed message_type to role
-        "created_at": ai_message.timestamp # Changed created_at to timestamp
-    }
+    # Return the AI's response using the response model
+    return MessageResponse.from_db_message(ai_message)
 
 @router.get("/sessions/{session_id}/messages", response_model=List[MessageResponse])
 async def get_messages(
@@ -129,12 +137,7 @@ async def get_messages(
             detail="Chat session not found"
         )
     
-    return [{
-        "id": str(message.id),
-        "content": message.content,
-        "role": message.role, # Changed message_type to role
-        "created_at": message.timestamp # Changed created_at to timestamp
-    } for message in session.messages]
+    return [MessageResponse.from_db_message(message) for message in session.messages]
 
 @router.post("/sessions/{session_id}/end")
 async def end_chat_session(
