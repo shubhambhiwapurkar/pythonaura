@@ -16,7 +16,7 @@ def get_password_hash(password: str) -> str:
     """Generate a password hash."""
     return pwd_context.hash(password)
 
-def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(subject: any, expires_delta: Optional[timedelta] = None) -> str:
     """Create a new access token."""
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -27,7 +27,7 @@ def create_access_token(subject: str, expires_delta: Optional[timedelta] = None)
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-def create_refresh_token(subject: str) -> str:
+def create_refresh_token(subject: any) -> str:
     """Create a new refresh token."""
     expire = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode = {"exp": expire, "sub": str(subject)}

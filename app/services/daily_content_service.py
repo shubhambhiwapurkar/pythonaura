@@ -35,7 +35,7 @@ class DailyContentService:
             }
 
         # Get user's birth chart for context
-        birth_chart = BirthChart.objects(user=user_id).first()
+        birth_chart = BirthChart.objects(user=user.id).first()
         if not birth_chart:
             # Return generic content if no birth chart exists
             return {

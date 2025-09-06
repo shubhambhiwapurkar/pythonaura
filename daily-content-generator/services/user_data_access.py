@@ -31,6 +31,13 @@ def get_active_users():
     """Get all active users from the database."""
     return User.objects(is_active=True)
 
+def get_user_by_id(user_id):
+    """Get a single user by their ID."""
+    try:
+        return User.objects(id=user_id).first()
+    except Exception:
+        return None
+
 def create_daily_content(user_id, content):
     """Create a new daily content entry for a user."""
     daily_content = DailyContent(
