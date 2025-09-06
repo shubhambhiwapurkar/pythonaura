@@ -11,8 +11,14 @@ from app.models.chat import ChatSession
 async def delete_account(current_user: User = Depends(get_current_user)):
     """Delete the current user's account and all associated data."""
     try:
+        user_id = str(current_user.id)  # Convert ObjectId to string
+        
         # Delete all chat sessions associated with the user
-        ChatSession.objects(user=current_user).delete()
+        ChatSession.objects(user=user_id).delete()
+        
+        # Delete all birth charts associated with the user
+        from app.models.birthchart import BirthChart
+        BirthChart.objects(user=user_id).delete()
         
         # Delete the user account
         current_user.delete()
