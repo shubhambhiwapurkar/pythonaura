@@ -1,5 +1,5 @@
 from datetime import datetime
-from mongoengine import Document, EmbeddedDocument, ReferenceField, DictField, DateTimeField, StringField, FloatField, EmbeddedDocumentField
+from mongoengine import Document, EmbeddedDocument, ReferenceField, DictField, DateTimeField, StringField, FloatField, EmbeddedDocumentField, fields
 
 class BirthData(EmbeddedDocument):
     date = DateTimeField(required=True)
@@ -20,7 +20,7 @@ class ChartData(EmbeddedDocument):
     aspects = DictField(required=True)
 
 class BirthChart(Document):
-    user = ReferenceField('User', required=True)
+    user = fields.ObjectIdField(required=True)
     birth_data = EmbeddedDocumentField(BirthData, required=True)
     chart_data = EmbeddedDocumentField(ChartData, required=True)
     created_at = DateTimeField(default=datetime.utcnow)
