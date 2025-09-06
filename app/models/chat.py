@@ -11,7 +11,7 @@ class Message(EmbeddedDocument):
     metadata = fields.DictField(default=dict)  # For storing any additional message metadata
 
 class ChatSession(Document):
-    user = ReferenceField('User', required=True)
+    user = fields.ObjectIdField(required=True)
     title = fields.StringField(default="New Chat")
     messages = fields.EmbeddedDocumentListField(Message, default=list)
     context = fields.DictField(default=dict)

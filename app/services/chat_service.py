@@ -18,7 +18,7 @@ class ChatService:
     async def create_session(user: User, title: str = None, context: dict = None) -> ChatSession:
         """Create a new chat session."""
         session = ChatSession(
-            user=user,
+            user=ObjectId(str(user.id)),
             title=title or "New Chat",
             context=context or {},
             created_at=datetime.utcnow(),
@@ -29,7 +29,8 @@ class ChatService:
     @staticmethod
     async def get_user_sessions(user: User, active_only: bool = True, limit: int = 20) -> List[ChatSession]:
         """Get all chat sessions for a user."""
-        query = ChatSession.objects(user=user)
+        user_id = ObjectId(str(user.id))
+        query = ChatSession.objects(user=user_id)
         if active_only:
             query = query.filter(is_active=True)
         return list(query.order_by('-updated_at').limit(limit))
@@ -38,7 +39,8 @@ class ChatService:
     async def get_session(session_id: str, user: User) -> Optional[ChatSession]:
         """Get a specific chat session."""
         try:
-            session = ChatSession.objects(id=ObjectId(session_id), user=user).first()
+            user_id = ObjectId(str(user.id))
+            session = ChatSession.objects(id=ObjectId(session_id), user=user_id).first()
             if not session:
                 raise HTTPException(status_code=404, detail="Chat session not found")
             return session
@@ -124,3 +126,18 @@ class ChatService:
     async def delete_session(session: ChatSession):
         """Delete a chat session and all its messages."""
         session.delete()
+
+    @staticmethod
+    async def get_or_create_session(user: User) -> Optional[ChatSession]:
+        """Get the most recent active session for a user or create a new one."""
+        # Convert user instance to ObjectId
+        user_id = ObjectId(str(user.id))
+        
+        # Try to get the most recent active session
+        session = ChatSession.objects(user=user_id, is_active=True).order_by('-updated_at').first()
+        
+        if not session:
+            # Create a new session if none exists
+            session = await ChatService.create_session(user=user)
+        
+        return session
