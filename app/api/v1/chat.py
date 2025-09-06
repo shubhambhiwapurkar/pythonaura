@@ -170,3 +170,13 @@ async def delete_chat_session(
     
     await ChatService.delete_session(session)
     return {"message": "Chat session deleted successfully"}
+
+@router.get("/", response_model=List[MessageResponse])
+async def get_chat_history(current_user: User = Depends(get_current_user)):
+    """Get all messages for the current user."""
+    # Get the most recent active session
+    session = await ChatService.get_or_create_session(current_user)
+    if not session:
+        return []
+    
+    return [MessageResponse.from_db_message(message) for message in session.messages]
