@@ -33,7 +33,7 @@ class ChatService:
     async def get_session(session_id: str, user: User) -> Optional[ChatSession]:
         """Get a specific chat session."""
         try:
-            return ChatSession.objects(id=ObjectId(session_id), user_id=user.id).first()
+            return ChatSession.objects(id=ObjectId(session_id), user=user).first()
         except Exception:
             return None
 
@@ -41,11 +41,8 @@ class ChatService:
     async def add_message(session: ChatSession, content: str, message_type: str) -> Message:
         """Add a message to a chat session."""
         message = Message(
-            message_type=message_type,
-            content=content,
-            metadata={
-                'client_timestamp': datetime.utcnow().isoformat()
-            }
+            role=message_type,
+            content=content
         )
         session.messages.append(message)
         session.save()

@@ -112,7 +112,7 @@ async def send_message(
     return {
         "id": str(ai_message.id),
         "content": ai_message.content,
-        "message_type": ai_message.message_type,
+        "role": ai_message.role, # Changed message_type to role
         "created_at": ai_message.created_at
     }
 
@@ -132,7 +132,7 @@ async def get_messages(
     return [{
         "id": str(message.id),
         "content": message.content,
-        "message_type": message.message_type,
+        "role": message.role, # Changed message_type to role
         "created_at": message.created_at
     } for message in session.messages]
 

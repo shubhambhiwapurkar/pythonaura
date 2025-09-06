@@ -21,7 +21,7 @@ def signup(email, password):
 
 def login(email, password):
     response = requests.post(
-        f"{BASE_URL}/api/v1/login",
+        f"{BASE_URL}/api/v1/auth/login",
         data={"username": email, "password": password},
         headers={"Content-Type": "application/x-www-form-urlencoded"}
     )
@@ -71,12 +71,12 @@ def delete_account(token):
     return response.json()
 
 def run_tests():
-    test_email = "test_user4@example.com"
+    test_email = "test_user5@example.com"
     test_password = "testpassword"
 
     try:
         # 1. Signup
-        signup_response = signup(test_email, test_password)
+        signup_response = login(test_email, test_password)
         access_token = signup_response["access_token"]
         refresh_token = signup_response["refresh_token"]
         print(f"Signup Response: {signup_response}")
