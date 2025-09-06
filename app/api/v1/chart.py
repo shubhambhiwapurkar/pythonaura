@@ -23,7 +23,7 @@ async def create_chart(birth_data: BirthData, current_user: User = Depends(get_c
         raise HTTPException(status_code=500, detail="Failed to create birth chart")
     
     birth_chart = BirthChart(
-        user=ObjectId(str(current_user.id)),
+        user=current_user.id,  # No need to convert to ObjectId, the field handles it
         birth_data=birth_data.dict(),
         chart_data=chart_data
     )
@@ -34,7 +34,7 @@ async def create_chart(birth_data: BirthData, current_user: User = Depends(get_c
 @router.get("/{chart_id}")
 async def get_chart(chart_id: str, current_user: User = Depends(get_current_user)):
     """Retrieve a specific birth chart for the current user."""
-    birth_chart = BirthChart.objects(id=ObjectId(chart_id), user=ObjectId(str(current_user.id))).first()
+    birth_chart = BirthChart.objects(id=chart_id, user=current_user.id).first()
     if not birth_chart:
         raise HTTPException(status_code=404, detail="Birth chart not found")
     return birth_chart
@@ -42,8 +42,7 @@ async def get_chart(chart_id: str, current_user: User = Depends(get_current_user
 @router.get("/user")
 async def get_user_charts(current_user: User = Depends(get_current_user)):
     """Retrieve all birth charts for the current user."""
-    user_id = ObjectId(str(current_user.id))
-    birth_charts = BirthChart.objects(user=user_id)
+    birth_charts = BirthChart.objects(user=current_user.id)
     return list(birth_charts)
 
 @router.get("/{chart_id}/transits")
