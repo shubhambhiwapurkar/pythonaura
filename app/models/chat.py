@@ -6,7 +6,9 @@ class Message(EmbeddedDocument):
     id = fields.ObjectIdField(default=lambda: ObjectId())
     role = fields.StringField(required=True, choices=['user', 'assistant'])
     content = fields.StringField(required=True)
+    message_type = fields.StringField(default='text')  # Added for message type validation
     timestamp = fields.DateTimeField(default=datetime.utcnow)
+    metadata = fields.DictField(default=dict)  # For storing any additional message metadata
 
 class ChatSession(Document):
     user = ReferenceField('User', required=True)

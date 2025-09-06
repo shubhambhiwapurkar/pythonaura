@@ -57,7 +57,12 @@ class ChatService:
         message = Message(
             role=message_type,
             content=content.strip(),
-            timestamp=datetime.utcnow()
+            message_type='text',  # Default to text type
+            timestamp=datetime.utcnow(),
+            metadata={
+                'length': len(content.strip()),
+                'processed': True
+            }
         )
         session.messages.append(message)
         session.updated_at = datetime.utcnow()
@@ -67,33 +72,40 @@ class ChatService:
     @staticmethod
     async def generate_response(session: ChatSession, user_message: str) -> str:
         """Generate an AI response based on the chat context and user message."""
-        # Prepare conversation history
-        conversation_history = []
-        for msg in session.messages[-5:]:  # Get last 5 messages for context
-            conversation_history.append({
-                'role': msg.role,
-                'parts': [{'text': msg.content}]
-            })
-        
-        # Add custom context if available
-        context_prompt = ""
-        if session.context:
-            context_list = [f"{key}: {value}" for key, value in session.context.items()]
-            context_prompt = "\nContext Information:\n" + "\n".join(context_list)
-        
-        # Prepare the prompt
-        system_prompt = f"""You are an AI assistant trained to provide helpful and informative responses.
-        Maintain a professional and supportive tone in your responses.{context_prompt}
-        
-        Keep responses clear, concise, and relevant to the user's query."""
-        
         try:
-            # Generate response using the AI model
-            response = model.generate_content([
-                {'role': 'system', 'content': system_prompt},
-                *conversation_history,
-                {'role': 'user', 'content': user_message}
-            ])
+            # Prepare conversation history
+            history = []
+            for msg in session.messages[-5:]:  # Get last 5 messages for context
+                if msg.role == 'user':
+                    history.append({
+                        'role': 'user',
+                        'parts': [{'text': msg.content}]
+                    })
+                else:
+                    history.append({
+                        'role': 'model',
+                        'parts': [{'text': msg.content}]
+                    })
+            
+            # Add custom context if available
+            context_prompt = ""
+            if session.context:
+                context_list = [f"{key}: {value}" for key, value in session.context.items()]
+                context_prompt = "\nContext Information:\n" + "\n".join(context_list)
+            
+            # Prepare the prompt with proper message format
+            chat = model.start_chat(history=history)
+            response = chat.send_message({
+                'role': 'user',
+                'parts': [{
+                    'text': f"""System: You are an AI assistant trained to provide helpful and informative responses.
+                    Maintain a professional and supportive tone in your responses.{context_prompt}
+                    
+                    Keep responses clear, concise, and relevant to the user's query.
+                    
+                    User message: {user_message}"""
+                }]
+            })
             
             return response.text
             
